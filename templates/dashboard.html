@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Tổng quan{% endblock %}
+{% block body %}
+<div class="cards">
+  <div class="card"><div class="k">Telegram</div><div class="v" style="font-size:16px"><span class="dot {{ 'on' if st.telegram else 'off' }}"></span>{{ 'Đang chạy' if st.telegram else 'Chưa chạy' }}</div></div>
+  <div class="card"><div class="k">Discord</div><div class="v" style="font-size:16px"><span class="dot {{ 'on' if st.discord else 'off' }}"></span>{{ 'Đã kết nối' if st.discord else 'Chưa kết nối' }}</div></div>
+  <div class="card"><div class="k">Hội thoại 24 giờ qua</div><div class="v">{{ s.conv_24h }}</div></div>
+  <div class="card"><div class="k">Đang chờ hỗ trợ</div><div class="v">{{ s.open_esc }}</div></div>
+  <div class="card"><div class="k">Truyện đã đăng (7 ngày)</div><div class="v">{{ s.stories_7d }}</div></div>
+  <div class="card"><div class="k">Bản nháp chờ duyệt</div><div class="v">{{ s.drafts }}</div></div>
+</div>
+
+<h2>Truyện hằng ngày</h2>
+<div class="panel">
+  {% if cfg.enabled %}Bật · {{ '%02d'|format(cfg.hour) }}:00 mỗi ngày · chế độ <b>{{ 'tự đăng' if cfg.mode == 'auto' else 'chờ admin duyệt' }}</b>{% else %}<b>Đang tắt</b>{% endif %}
+  <div class="muted">Lần chạy gần nhất: {{ last_story or 'chưa có' }} · <a href="/stories">Quản lý</a></div>
+</div>
+
+<h2>Cấu hình kênh (đặt trong .env)</h2>
+<div class="panel muted">
+  Đăng cộng đồng: Telegram {{ tg_target or '— chưa đặt' }} · Discord {{ dc_target or '— chưa đặt' }}<br>
+  Báo admin: Telegram {{ tg_admin or '— chưa đặt' }} · Discord {{ dc_admin or '— chưa đặt' }}
+</div>
+
+<h2>Việc cần làm</h2>
+<div class="panel">
+  <a href="/inbox">Xem {{ s.open_esc }} yêu cầu cần hỗ trợ</a> ·
+  <a href="/knowledge">Cập nhật kiến thức</a> ·
+  <a href="/test">Thử bot</a>
+</div>
+{% endblock %}

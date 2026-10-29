@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}{% endblock %} · KPOW Admin</title>
+<style>
+:root{--bg:#f6f7f9;--panel:#fff;--text:#1b1f24;--muted:#6b7280;--line:#e3e6ea;--accent:#2563eb;--accent-t:#fff;--ok:#15803d;--okbg:#e8f7ee;--err:#b91c1c;--errbg:#fdecec;--warn:#b45309}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1216;--panel:#171b21;--text:#e6e8eb;--muted:#9aa3ad;--line:#2a3038;--accent:#6ea0ff;--accent-t:#0b1220;--ok:#4ade80;--okbg:#10281a;--err:#f87171;--errbg:#2c1517;--warn:#fbbf24}}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+aside{width:210px;flex:none;background:var(--panel);border-right:1px solid var(--line);padding:16px 10px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh}
+.brand{font-weight:700;font-size:17px;padding:4px 10px 14px}
+aside a{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-radius:8px;color:var(--text);text-decoration:none}
+aside a:hover{background:var(--bg)}
+aside a.on{background:var(--accent);color:var(--accent-t)}
+aside a.out{margin-top:auto;color:var(--muted)}
+.badge{background:var(--err);color:#fff;border-radius:99px;font-size:12px;padding:0 7px}
+main{flex:1;min-width:0;padding:24px 28px;max-width:1100px}
+h1{font-size:22px;margin:0 0 16px}
+h2{font-size:16px;margin:26px 0 8px}
+.flash{padding:10px 14px;border-radius:8px;margin-bottom:14px}
+.flash.ok{background:var(--okbg);color:var(--ok)}.flash.err{background:var(--errbg);color:var(--err)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:8px}
+.card,.item,.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.card .k{color:var(--muted);font-size:13px}.card .v{font-size:24px;font-weight:700}
+.item{margin-bottom:12px}
+.meta{color:var(--muted);font-size:13px;margin-bottom:6px}
+.tag{display:inline-block;border:1px solid var(--line);border-radius:6px;padding:0 7px;font-size:12px;margin-right:4px}
+.tag.draft{color:var(--warn)}.tag.posted{color:var(--ok)}
+.q{white-space:pre-wrap;margin-bottom:8px}
+.pre{white-space:pre-wrap}
+textarea,input[type=text],input[type=password],select{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit}
+textarea.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px}
+button{background:var(--accent);color:var(--accent-t);border:0;border-radius:8px;padding:8px 14px;font:inherit;cursor:pointer;margin-top:8px}
+button.sec{background:transparent;color:var(--text);border:1px solid var(--line)}
+button.danger{background:var(--err);color:#fff}
+label{display:block;margin:8px 0 2px;font-weight:600}
+label.inline{display:inline-flex;gap:6px;align-items:center;font-weight:400;margin-right:14px}
+table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;font-size:14px}
+th{color:var(--muted);font-weight:600}
+.tabs a{margin-right:12px;color:var(--muted);text-decoration:none}.tabs a.on{color:var(--text);font-weight:700}
+.muted{color:var(--muted)}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.dot.on{background:var(--ok)}.dot.off{background:var(--err)}
+.bubble{padding:10px 14px;border-radius:12px;margin:8px 0;max-width:85%;white-space:pre-wrap}
+.bubble.user{background:var(--accent);color:var(--accent-t);margin-left:auto}.bubble.bot{background:var(--panel);border:1px solid var(--line)}
+details summary{cursor:pointer}
+@media(max-width:800px){body{flex-direction:column}aside{width:auto;height:auto;position:static;flex-direction:row;flex-wrap:wrap;border-right:0;border-bottom:1px solid var(--line)}.brand{width:100%}aside a.out{margin-top:0}main{padding:16px}}
+</style>
+</head>
+<body>
+{% if session.get('auth') %}
+<aside>
+  <div class="brand">KPOW Admin</div>
+  {% for path, label in nav %}
+  <a href="{{ path }}" class="{{ 'on' if request.path == path else '' }}">{{ label }}{% if path == '/inbox' and open_count %}<span class="badge">{{ open_count }}</span>{% endif %}</a>
+  {% endfor %}
+  <a href="/logout" class="out">Đăng xuất</a>
+</aside>
+{% endif %}
+<main>
+<h1>{% block title2 %}{{ self.title() }}{% endblock %}</h1>
+{% with msgs = get_flashed_messages(with_categories=true) %}{% for cat, m in msgs %}<div class="flash {{ cat }}">{{ m }}</div>{% endfor %}{% endwith %}
+{% block body %}{% endblock %}
+</main>
+</body>
+</html>

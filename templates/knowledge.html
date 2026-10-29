@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Kiến thức{% endblock %}
+{% block body %}
+<p class="muted">Đây là toàn bộ thông tin bot được phép dựa vào để trả lời. Hãy cập nhật khi dự án có tin mới (presale, phí, pool, roadmap…). Mỗi lần lưu đều tự sao lưu bản trước.</p>
+<form method="post" action="/knowledge">
+  <input type="hidden" name="csrf" value="{{ csrf_token }}">
+  <textarea class="mono" name="content" rows="30" required>{{ content }}</textarea>
+  <button type="submit">Lưu và áp dụng ngay</button>
+</form>
+
+<h2>Sao lưu gần đây</h2>
+{% for b in backups %}
+<form method="post" action="/knowledge/restore" style="display:inline" onsubmit="return confirm('Khôi phục bản này? Bản hiện tại sẽ được sao lưu trước.')">
+  <input type="hidden" name="csrf" value="{{ csrf_token }}">
+  <input type="hidden" name="name" value="{{ b }}">
+  <button class="sec" type="submit">{{ b }}</button>
+</form>
+{% else %}<span class="muted">Chưa có bản sao lưu.</span>{% endfor %}
+
+<h2>Đặt lại</h2>
+<form method="post" action="/knowledge/reset" onsubmit="return confirm('Đặt lại về bản mặc định đi kèm mã nguồn?')">
+  <input type="hidden" name="csrf" value="{{ csrf_token }}">
+  <button class="sec" type="submit">Đặt lại về bản mặc định</button>
+</form>
+{% endblock %}

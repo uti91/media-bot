@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Câu chuyện{% endblock %}
+{% block body %}
+<h2>Lịch đăng hằng ngày</h2>
+<form method="post" action="/stories/settings" class="panel">
+  <input type="hidden" name="csrf" value="{{ csrf_token }}">
+  <label class="inline"><input type="checkbox" name="enabled" {{ 'checked' if cfg.enabled else '' }}> Bật đăng truyện hằng ngày</label>
+  <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:end">
+    <div><label for="hour">Giờ đăng</label>
+      <select id="hour" name="hour">{% for h in range(24) %}<option value="{{ h }}" {{ 'selected' if h == cfg.hour else '' }}>{{ '%02d'|format(h) }}:00</option>{% endfor %}</select></div>
+    <div><label>Chế độ</label>
+      <label class="inline"><input type="radio" name="mode" value="auto" {{ 'checked' if cfg.mode == 'auto' else '' }}> Tự đăng</label>
+      <label class="inline"><input type="radio" name="mode" value="approve" {{ 'checked' if cfg.mode == 'approve' else '' }}> Tạo bản nháp, chờ tôi duyệt</label></div>
+  </div>
+  <div class="muted">Kênh đăng: Telegram {{ tg_target or '— chưa đặt TELEGRAM_COMMUNITY_CHAT_ID' }} · Discord {{ dc_target or '— chưa đặt DISCORD_STORY_CHANNEL_ID' }}</div>
+  <button type="submit">Lưu cài đặt</button>
+</form>
+
+<h2>Tạo bản nháp ngay</h2>
+<form method="post" action="/stories/generate" class="panel">
+  <input type="hidden" name="csrf" value="{{ csrf_token }}">
+  <label for="theme">Chủ đề (để trống = lấy chủ đề kế tiếp trong danh sách)</label>
+  <input id="theme" type="text" name="theme" maxlength="300">
+  <button type="submit">Tạo bản nháp (mất vài giây)</button>
+</form>
+
+<h2>Danh sách chủ đề (mỗi dòng một chủ đề, xoay vòng)</h2>
+<form method="post" action="/stories/themes">
+  <input type="hidden" name="csrf" value="{{ csrf_token }}">
+  <textarea name="themes" rows="8">{{ themes }}</textarea>
+  <button type="submit">Lưu chủ đề</button>
+  <span class="muted">Để trống rồi lưu = về danh sách mặc định.</span>
+</form>
+
+<h2>Truyện gần đây</h2>
+{% for s in rows %}
+<div class="item">
+  <div class="meta">
+    <span class="tag {{ s.status }}">{{ {'draft':'Bản nháp','posted':'Đã đăng','adhoc':'Theo yêu cầu'}[s.status] }}</span>
+    #{{ s.id }} · {{ s.ts|ts }}{% if s.posted_ts %} · đăng {{ s.posted_ts|ts }}{% endif %} · {{ s.source }}
+  </div>
+  {% if s.status == 'draft' %}
+  <form method="post">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <textarea name="body" rows="10">{{ s.body }}</textarea>
+    <button type="submit" formaction="/stories/{{ s.id }}/post" onclick="return confirm('Đăng truyện này lên kênh cộng đồng?')">Đăng ngay</button>
+    <button type="submit" class="sec" formaction="/stories/{{ s.id }}/save">Lưu nháp</button>
+    <button type="submit" class="danger" formaction="/stories/{{ s.id }}/delete" formnovalidate onclick="return confirm('Xoá bản nháp này?')">Xoá</button>
+  </form>
+  {% else %}
+  <details><summary>{{ s.title }}</summary><div class="pre" style="margin-top:6px">{{ s.body }}</div></details>
+  {% endif %}
+</div>
+{% else %}
+<div class="panel muted">Chưa có truyện nào.</div>
+{% endfor %}
+{% endblock %}

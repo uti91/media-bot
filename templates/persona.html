@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Tính cách bot{% endblock %}
+{% block body %}
+<p class="muted">Thêm hướng dẫn riêng (giọng điệu, cách xưng hô, câu chào, chủ đề cần nhấn mạnh…). Hướng dẫn này <b>không thể</b> ghi đè các nguyên tắc an toàn bên dưới.</p>
+<form method="post" action="/persona">
+  <input type="hidden" name="csrf" value="{{ csrf_token }}">
+  <label for="extra">Hướng dẫn bổ sung</label>
+  <textarea id="extra" name="extra" rows="10" placeholder="Ví dụ: Xưng &quot;mình&quot; và gọi người dùng là &quot;bạn&quot;. Luôn kết thúc bằng một lời chúc ngắn.">{{ extra }}</textarea>
+  <button type="submit">Lưu và áp dụng ngay</button>
+</form>
+<h2>Nguyên tắc cốt lõi (chỉ xem)</h2>
+<details class="panel"><summary>Mở để xem</summary><div class="pre muted" style="margin-top:8px">{{ core }}</div></details>
+<p class="muted">Muốn sửa nguyên tắc cốt lõi, chỉnh file <code>prompts.py</code> rồi khởi động lại bot.</p>
+{% endblock %}

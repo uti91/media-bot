@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Cần hỗ trợ{% endblock %}
+{% block body %}
+<p class="tabs"><a href="/inbox?status=open" class="{{ 'on' if status == 'open' else '' }}">Đang chờ</a><a href="/inbox?status=resolved" class="{{ 'on' if status == 'resolved' else '' }}">Đã xử lý</a></p>
+<p class="muted">Đây là các câu hỏi bot không trả lời được. Trả lời tại đây sẽ được gửi thẳng vào cuộc trò chuyện gốc dưới dạng "👤 Admin: …".</p>
+{% for r in rows %}
+<div class="item">
+  <div class="meta"><span class="tag">{{ r.platform }}</span><b>{{ r.user_name }}</b> · {{ r.ts|ts }} · #{{ r.id }}</div>
+  <div class="q">{{ r.question }}</div>
+  {% if status == 'open' %}
+  <form method="post" action="/inbox/{{ r.id }}/reply">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <textarea name="text" rows="3" placeholder="Nội dung trả lời…" required></textarea>
+    <button type="submit">Gửi trả lời</button>
+    <button type="submit" class="sec" formaction="/inbox/{{ r.id }}/resolve" formnovalidate>Đánh dấu đã xử lý (không trả lời)</button>
+  </form>
+  {% else %}
+  <div class="meta">Xử lý lúc {{ r.resolved_ts|ts }}{% if r.admin_reply %} · Đã trả lời: <span class="pre">{{ r.admin_reply }}</span>{% endif %}</div>
+  {% endif %}
+</div>
+{% else %}
+<div class="panel muted">Không có yêu cầu nào.</div>
+{% endfor %}
+{% endblock %}

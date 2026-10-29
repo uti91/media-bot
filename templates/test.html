@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Thử bot{% endblock %}
+{% block body %}
+<p class="muted">Hỏi thử bot bằng đúng kiến thức và hướng dẫn đang áp dụng. Cuộc trò chuyện này <b>không</b> được ghi nhật ký và <b>không</b> báo admin.</p>
+{% for m in history %}
+<div class="bubble {{ 'user' if m.role == 'user' else 'bot' }}">{{ m.content }}</div>
+{% else %}
+<div class="muted">Chưa có tin nhắn. Thử: "Chain ID của KPOW là gì?", "Khi nào presale?", "KPOW có tăng giá không?"</div>
+{% endfor %}
+{% if esc %}<div class="flash err">Với câu này, bot sẽ báo admin thật khi chạy trên Telegram/Discord.</div>{% endif %}
+<form method="post" action="/test">
+  <input type="hidden" name="csrf" value="{{ csrf_token }}">
+  <textarea name="text" rows="3" maxlength="1000" placeholder="Nhập câu hỏi…" required autofocus></textarea>
+  <button type="submit">Gửi</button>
+  <button type="submit" class="sec" formaction="/test/reset" formnovalidate>Xoá hội thoại thử</button>
+</form>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Hội thoại{% endblock %}
+{% block body %}
+<p class="tabs">
+  <a href="/chats" class="{{ 'on' if not platform and not only_esc else '' }}">Tất cả</a>
+  <a href="/chats?platform=telegram" class="{{ 'on' if platform == 'telegram' else '' }}">Telegram</a>
+  <a href="/chats?platform=discord" class="{{ 'on' if platform == 'discord' else '' }}">Discord</a>
+  <a href="/chats?esc=1" class="{{ 'on' if only_esc else '' }}">Chỉ câu bot chuyển admin</a>
+</p>
+<p class="muted">Hiển thị 100 hội thoại gần nhất. Dữ liệu tự xoá sau {{ retention }} ngày. Dùng để rà soát chất lượng và bổ sung kiến thức còn thiếu.</p>
+<table>
+<tr><th>Lúc</th><th>Nơi</th><th>Người dùng</th><th>Hỏi</th><th>Bot trả lời</th></tr>
+{% for r in rows %}
+<tr>
+  <td>{{ r.ts|ts }}</td>
+  <td><span class="tag">{{ r.platform }}</span><br><span class="muted">{{ r.place }}</span></td>
+  <td>{{ r.user_name }}</td>
+  <td class="pre">{{ r.question[:400] }}</td>
+  <td class="pre">{{ r.answer[:600] }}{% if r.escalated %}<br><span class="tag draft">đã chuyển admin</span>{% endif %}</td>
+</tr>
+{% else %}
+<tr><td colspan="5" class="muted">Chưa có hội thoại nào.</td></tr>
+{% endfor %}
+</table>
+<form method="post" action="/chats/purge" onsubmit="return confirm('Xoá TOÀN BỘ nhật ký hội thoại?')">
+  <input type="hidden" name="csrf" value="{{ csrf_token }}">
+  <button class="danger" type="submit">Xoá toàn bộ nhật ký</button>
+</form>
+{% endblock %}
